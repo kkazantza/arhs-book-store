@@ -1,6 +1,8 @@
 package com.example.arhsbookstore.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -9,15 +11,24 @@ public class Book {
 
 
     @Id
+    @NotNull(message = "Isbn is mandatory")
     private long isbn;
-    @Column
+
+    @Column(nullable = false)
+    @NotBlank(message = "Name is mandatory")
     private String name;
-    @Column
+
+    @Column(nullable = false)
+    @NotBlank(message = "Author is mandatory")
     private String author;
-    @Column
+
+    @Column(nullable = false)
+    @NotBlank(message = "Publisher is mandatory")
     private String publisher;
+
     @Temporal(TemporalType.DATE)
     private Date publishDate;
+
     @Column
     private int pages;
 
