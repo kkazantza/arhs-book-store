@@ -50,6 +50,7 @@ public class BookController {
      * @return
      */
     @PostMapping("/book/{isbn}")
+    @ResponseStatus(HttpStatus.CREATED)
     private  @ResponseBody Book saveBook(@PathVariable long isbn, @Valid @RequestBody Book book) {
         book.setIsbn(isbn);
         return bookService.saveOrUpdate(book);
