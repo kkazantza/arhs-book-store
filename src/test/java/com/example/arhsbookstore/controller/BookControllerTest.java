@@ -17,13 +17,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.any;
 
 
 /**
@@ -61,15 +62,6 @@ public class BookControllerTest {
             .andExpect(jsonPath("$.name", is(book.getName())))
             .andExpect(jsonPath("$.author", is(book.getAuthor())))
             .andExpect(jsonPath("$.publisher", is(book.getPublisher())));
-
-
-//        MvcResult result = mvc.perform(get("/arhs-book-store/book/{isbn}", isbn)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                        .andDo(MockMvcResultHandlers.print()).andReturn();
-//        String expected = "[{isbn:1, name:\"Lord of the Rings\", author:\"J.R.R. Tolkien\", publisher:\"Random House USA Inc\"}]";
-//        JSONAssert.assertEquals(expected, result.getResponse()
-//                .getContentAsString(), true);
-
     }
 
     @Test
@@ -81,7 +73,7 @@ public class BookControllerTest {
         book.setAuthor("J.R.R. Tolkien");
         book.setPublisher("Random House USA Inc");
 
-        BDDMockito.given(service.saveOrUpdate(book)).willReturn(book);
+        BDDMockito.given(service.saveOrUpdate(any(Book.class))).willAnswer((invocation) -> invocation.getArgument(0));
 
         mvc.perform(post("/arhs-book-store/book/{isbn}", isbn)
                 .contentType(MediaType.APPLICATION_JSON)
