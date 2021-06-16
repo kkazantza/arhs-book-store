@@ -1,23 +1,19 @@
 package com.example.arhsbookstore.controller;
 
 import com.example.arhsbookstore.model.Book;
+import com.example.arhsbookstore.ValidateRequestBodyList;
 import com.example.arhsbookstore.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/arhs-book-store")
@@ -61,11 +57,13 @@ public class BookController {
      * @param books
      * @return
      */
+    @ResponseStatus(HttpStatus.CREATED)
     @PutMapping("/books")
     private @ResponseBody List<Book> addBooks (@RequestBody
-                                               @Validated(BookController.class)
-                                               @NotEmpty List<@Valid Book> books){
-        return bookService.addBooks(books);
+                                               @Valid
+                                               @NotEmpty ValidateRequestBodyList<Book> books){
+        List<Book> bookList=books.getRequestBody();
+        return bookService.addBooks(bookList);
     }
 
 
@@ -88,24 +86,5 @@ public class BookController {
         return errors;
     }
 
-    /**
-     * Handle client message for exceptions thrown for addBooks() api call
-     *
-     * @param constraintViolationException
-     * @return
-     */
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity handleConstraintViolationExceptions(ConstraintViolationException constraintViolationException) {
-        Set<ConstraintViolation<?>> violations = constraintViolationException.getConstraintViolations();
-        String errorMessage = "";
-        if (!violations.isEmpty()) {
-            StringBuilder builder = new StringBuilder();
-            violations.forEach(violation -> builder.append(" " + violation.getMessage()));
-            errorMessage = builder.toString();
-        } else {
-            errorMessage = "ConstraintViolationException occured.";
-        }
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
-    }
 
 }

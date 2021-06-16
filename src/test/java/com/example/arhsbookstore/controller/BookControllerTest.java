@@ -2,10 +2,12 @@ package com.example.arhsbookstore.controller;
 
 import com.example.arhsbookstore.model.Book;
 import com.example.arhsbookstore.service.BookService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,13 +17,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.ArgumentMatchers.any;
@@ -102,11 +107,46 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$.name", is("Name is mandatory")));
     }
 
+    @Test
+    public void shouldReturn400WhenBookNameIsEmptyForInList() throws Exception{
+        Book book=new Book();
+        final long isbn=1l;
+        book.setIsbn(isbn);
+        book.setName("");
+        book.setAuthor("J.R.R. Tolkien");
+        book.setPublisher("Random House USA Inc");
+
+        List<Book> books = Arrays.asList(book);
+
+        mvc.perform(put("/arhs-book-store/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"requestBody\":"+mapper.writeValueAsString(books)+"}"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest());
+    }
+
+
+
+    @Test
+    public void shouldAddBooks() throws Exception {
+        List<Book> books = createBooks();
+        BDDMockito.given(service.addBooks(anyList())).willAnswer((invocation) -> invocation.getArgument(0));
+
+        mvc.perform(put("/arhs-book-store/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"requestBody\":"+mapper.writeValueAsString(books)+"}"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].isbn", is(1)))
+                .andExpect(jsonPath("$[1].isbn", is(2)));
+    }
+
 
     @Test
     public void shouldFetchAllBooks() throws Exception {
         List<Book> allBooks = createBooks();
-        Mockito.when(service.getAllBooks()).thenReturn(allBooks);
+        when(service.getAllBooks()).thenReturn(allBooks);
 
         mvc.perform(get("/arhs-book-store/books")
         .contentType(MediaType.APPLICATION_JSON))
