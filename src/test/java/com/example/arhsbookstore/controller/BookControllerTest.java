@@ -2,13 +2,10 @@ package com.example.arhsbookstore.controller;
 
 import com.example.arhsbookstore.model.Book;
 import com.example.arhsbookstore.service.BookService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,19 +14,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.mockito.ArgumentMatchers.any;
 
 
 /**
@@ -138,8 +133,8 @@ public class BookControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].isbn", is(1)))
-                .andExpect(jsonPath("$[1].isbn", is(2)));
+                .andExpect(jsonPath("$[0].isbn", is(books.get(0).getIsbn()), Long.class))
+                .andExpect(jsonPath("$[1].isbn", is(books.get(1).getIsbn()), Long.class));
     }
 
 
@@ -157,13 +152,13 @@ public class BookControllerTest {
 
     private List<Book> createBooks(){
         Book testBook1=new Book();
-        testBook1.setIsbn(1);
+        testBook1.setIsbn(1l);
         testBook1.setName("Lord of the Rings");
         testBook1.setAuthor("J.R.R. Tolkien");
         testBook1.setPublisher("Random House USA Inc");
 
         Book testBook2=new Book();
-        testBook2.setIsbn(2);
+        testBook2.setIsbn(2l);
         testBook2.setName("Mary Poppins");
         testBook2.setAuthor("P.L. Travers");
         testBook2.setPublisher("Thames and Hudson Ltd");

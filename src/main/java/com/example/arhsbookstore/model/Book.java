@@ -12,7 +12,7 @@ public class Book {
 
     @Id
     @NotNull(message = "Isbn is mandatory")
-    private long isbn;
+    private Long isbn;
 
     @Column(nullable = false)
     @NotBlank(message = "Name is mandatory")
@@ -32,11 +32,11 @@ public class Book {
     @Column
     private int pages;
 
-    public long getIsbn() {
+    public Long getIsbn() {
         return isbn;
     }
 
-    public void setIsbn(long isbn) {
+    public void setIsbn(Long isbn) {
         this.isbn = isbn;
     }
 

@@ -54,13 +54,13 @@ public class BookRepositoryTest {
 
     private List<Book> createBooks(){
         Book testBook1=new Book();
-        testBook1.setIsbn(1);
+        testBook1.setIsbn(1l);
         testBook1.setName("Lord of the Rings");
         testBook1.setAuthor("J.R.R. Tolkien");
         testBook1.setPublisher("Random House USA Inc");
 
         Book testBook2=new Book();
-        testBook2.setIsbn(2);
+        testBook2.setIsbn(2l);
         testBook2.setName("Mary Poppins");
         testBook2.setAuthor("P.L. Travers");
         testBook2.setPublisher("Thames and Hudson Ltd");
