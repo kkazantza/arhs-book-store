@@ -11,7 +11,6 @@ public class Book {
 
 
     @Id
-    @NotNull(message = "Isbn is mandatory")
     private Long isbn;
 
     @Column(nullable = false)

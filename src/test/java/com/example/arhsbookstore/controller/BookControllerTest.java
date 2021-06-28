@@ -65,24 +65,26 @@ public class BookControllerTest {
     }
 
     @Test
-    public void shouldCreateBook() throws Exception {
-        Book book=new Book();
+    public void shouldSaveBook() throws Exception {
         final long isbn=1l;
-        book.setIsbn(isbn);
-        book.setName("Lord of the Rings");
-        book.setAuthor("J.R.R. Tolkien");
-        book.setPublisher("Random House USA Inc");
+
+        Book bookRequest = new Book();
+        bookRequest.setName("Lord of the Rings");
+        bookRequest.setAuthor("J.R.R. Tolkien");
+        bookRequest.setPublisher("Random House USA Inc");
 
         BDDMockito.given(service.saveOrUpdate(any(Book.class))).willAnswer((invocation) -> invocation.getArgument(0));
 
+
         mvc.perform(post("/arhs-book-store/book/{isbn}", isbn)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(book)))
+                .content(mapper.writeValueAsString(bookRequest)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is(book.getName())))
-                .andExpect(jsonPath("$.author", is(book.getAuthor())))
-                .andExpect(jsonPath("$.publisher", is(book.getPublisher())));
+                .andExpect(jsonPath("$.isbn", is(isbn), Long.class))
+                .andExpect(jsonPath("$.name", is(bookRequest.getName())))
+                .andExpect(jsonPath("$.author", is(bookRequest.getAuthor())))
+                .andExpect(jsonPath("$.publisher", is(bookRequest.getPublisher())));
     }
 
     @Test
